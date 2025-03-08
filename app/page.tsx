@@ -6,8 +6,21 @@ const demoList = {
   items: ["apples","oranges","bananas","olives","small, slow-moving children"]
 };
 
+function encodeUrlSafeBase64(str: string): string {
+  try {
+    const base64 = window.btoa(unescape(encodeURIComponent(str)))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+    return base64;
+  } catch (e) {
+    console.error('Failed to encode:', e);
+    return '';
+  }
+}
+
 export default function Home() {
-  const encodedDemoList = btoa(JSON.stringify(demoList));
+  const encodedDemoList = encodeUrlSafeBase64(JSON.stringify(demoList));
 
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>

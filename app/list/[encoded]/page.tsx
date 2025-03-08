@@ -23,17 +23,56 @@ interface ListData {
   items: string[];
 }
 
+function decodeUrlSafeBase64(str: string): string {
+  // Add padding if needed
+  const padding = '='.repeat((4 - (str.length % 4)) % 4);
+  const base64 = (str + padding).replace(/-/g, '+').replace(/_/g, '/');
+  
+  try {
+    return decodeURIComponent(escape(window.atob(base64)));
+  } catch (e) {
+    console.error('Failed to decode:', e);
+    return '';
+  }
+}
+
+function encodeUrlSafeBase64(str: string): string {
+  try {
+    const base64 = window.btoa(unescape(encodeURIComponent(str)))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+    return base64;
+  } catch (e) {
+    console.error('Failed to encode:', e);
+    return '';
+  }
+}
+
 export default function List({ params }: { params: { encoded: string } }) {
   const [listData, setListData] = useState<ListData | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     try {
-      const decoded = atob(params.encoded);
+      const decoded = decodeUrlSafeBase64(params.encoded);
+      if (!decoded) {
+        setError('Invalid encoded data');
+        return;
+      }
+      
       const data = JSON.parse(decoded) as ListData;
+      if (!data.title || !Array.isArray(data.items)) {
+        setError('Invalid list format');
+        return;
+      }
+      
       setListData(data);
+      setError(null);
     } catch (error) {
       console.error('Failed to decode list data:', error);
+      setError('Failed to load list');
     }
   }, [params.encoded]);
 
@@ -60,15 +99,29 @@ export default function List({ params }: { params: { encoded: string } }) {
 
   const handleShare = () => {
     if (listData) {
-      const encodedList = btoa(JSON.stringify(listData));
+      const encodedList = encodeUrlSafeBase64(JSON.stringify(listData));
       const url = `${window.location.origin}/list/${encodedList}`;
       navigator.clipboard.writeText(url);
       setSnackbarOpen(true);
     }
   };
 
+  if (error) {
+    return (
+      <Container maxWidth="sm" sx={{ mt: 4 }}>
+        <Typography color="error" align="center">
+          {error}
+        </Typography>
+      </Container>
+    );
+  }
+
   if (!listData) {
-    return <Typography>Loading...</Typography>;
+    return (
+      <Container maxWidth="sm" sx={{ mt: 4 }}>
+        <Typography align="center">Loading...</Typography>
+      </Container>
+    );
   }
 
   return (

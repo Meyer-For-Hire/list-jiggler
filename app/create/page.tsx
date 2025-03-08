@@ -14,6 +14,19 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+function encodeUrlSafeBase64(str: string): string {
+  try {
+    const base64 = window.btoa(unescape(encodeURIComponent(str)))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+    return base64;
+  } catch (e) {
+    console.error('Failed to encode:', e);
+    return '';
+  }
+}
+
 export default function CreateList() {
   const router = useRouter();
   const [title, setTitle] = useState('');
@@ -38,8 +51,10 @@ export default function CreateList() {
         title: title || 'My List',
         items,
       };
-      const encodedList = btoa(JSON.stringify(listData));
-      router.push(`/list/${encodedList}`);
+      const encodedList = encodeUrlSafeBase64(JSON.stringify(listData));
+      if (encodedList) {
+        router.push(`/list/${encodedList}`);
+      }
     }
   };
 

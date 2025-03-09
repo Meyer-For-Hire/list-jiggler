@@ -13,19 +13,7 @@ import {
   Stack,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-
-function encodeUrlSafeBase64(str: string): string {
-  try {
-    const base64 = window.btoa(unescape(encodeURIComponent(str)))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-    return base64;
-  } catch (e) {
-    console.error('Failed to encode:', e);
-    return '';
-  }
-}
+import { encodeUrlSafeBase64 } from '../utils/encoding';
 
 export default function CreateList() {
   const router = useRouter();

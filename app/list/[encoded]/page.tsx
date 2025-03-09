@@ -17,36 +17,11 @@ import {
 } from '@dnd-kit/sortable';
 import { Container, Typography, Button, Stack, Snackbar } from '@mui/material';
 import { SortableItem } from './SortableItem';
+import { encodeUrlSafeBase64, decodeUrlSafeBase64 } from '../../utils/encoding';
 
 interface ListData {
   title: string;
   items: string[];
-}
-
-function decodeUrlSafeBase64(str: string): string {
-  // Add padding if needed
-  const padding = '='.repeat((4 - (str.length % 4)) % 4);
-  const base64 = (str + padding).replace(/-/g, '+').replace(/_/g, '/');
-  
-  try {
-    return decodeURIComponent(escape(window.atob(base64)));
-  } catch (e) {
-    console.error('Failed to decode:', e);
-    return '';
-  }
-}
-
-function encodeUrlSafeBase64(str: string): string {
-  try {
-    const base64 = window.btoa(unescape(encodeURIComponent(str)))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-    return base64;
-  } catch (e) {
-    console.error('Failed to encode:', e);
-    return '';
-  }
 }
 
 export default function List({ params }: { params: { encoded: string } }) {

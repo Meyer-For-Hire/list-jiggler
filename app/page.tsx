@@ -1,23 +1,11 @@
 import { Button, Typography, Stack, Container } from '@mui/material';
 import Link from 'next/link';
+import { encodeUrlSafeBase64 } from './utils/encoding';
 
 const demoList = {
   title: "Things I Like To Eat",
   items: ["apples","oranges","bananas","olives","small, slow-moving children"]
 };
-
-function encodeUrlSafeBase64(str: string): string {
-  try {
-    const base64 = window.btoa(unescape(encodeURIComponent(str)))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-    return base64;
-  } catch (e) {
-    console.error('Failed to encode:', e);
-    return '';
-  }
-}
 
 export default function Home() {
   const encodedDemoList = encodeUrlSafeBase64(JSON.stringify(demoList));

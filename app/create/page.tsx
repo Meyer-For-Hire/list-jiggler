@@ -124,10 +124,10 @@ export default function CreateList() {
           fullWidth
         >
           <ToggleButton value="single" aria-label="single item">
-            Single Item
+            Add Single Items
           </ToggleButton>
           <ToggleButton value="bulk" aria-label="bulk input">
-            Bulk Input
+            Add Multiple Items at Once
           </ToggleButton>
         </ToggleButtonGroup>
 

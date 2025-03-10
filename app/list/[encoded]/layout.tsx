@@ -26,20 +26,11 @@ export async function generateMetadata({ params }: { params: { encoded: string }
         description: description,
         type: 'website',
         siteName: 'List Jiggler',
-        images: [
-          {
-            url: 'https://list-jiggler.meyer4hire.com/m4h-blue-coin.132x132.png', 
-            width: 40,
-            height: 40,
-            alt: 'List Jiggler'
-          }
-        ]
       },
       twitter: {
         card: 'summary_large_image',
         title: data.title,
         description: description,
-        images: ['https://list-jiggler.meyer4hire.com/m4h-blue-coin.132x132.png'] 
       }
     };
   } catch (error) {

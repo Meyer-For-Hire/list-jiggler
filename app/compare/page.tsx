@@ -115,7 +115,7 @@ export default function Compare() {
         </Typography>
 
         <TextField
-          label="List URLs"
+          label="List URLs, one per line"
           multiline
           rows={4}
           value={urls}

@@ -104,8 +104,8 @@ export default function CreateList() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Stack spacing={4} sx={{ minHeight: '100vh' }}>
+    <Container maxWidth="sm">
+      <Stack spacing={4} sx={{ minHeight: '100vh', py: 6 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Create Your List
         </Typography>

@@ -85,8 +85,8 @@ export default function List({ params }: { params: { encoded: string } }) {
 
   if (error) {
     return (
-      <Container maxWidth="sm" sx={{ mt: 4 }}>
-        <Stack spacing={4} sx={{ minHeight: '100vh' }}>
+      <Container maxWidth="sm">
+        <Stack spacing={4} sx={{ minHeight: '100vh', py: 6 }}>
           <Typography color="error" align="center">
             {error}
           </Typography>
@@ -99,8 +99,8 @@ export default function List({ params }: { params: { encoded: string } }) {
 
   if (!listData) {
     return (
-      <Container maxWidth="sm" sx={{ mt: 4 }}>
-        <Stack spacing={4} sx={{ minHeight: '100vh' }}>
+      <Container maxWidth="sm">
+        <Stack spacing={4} sx={{ minHeight: '100vh', py: 6 }}>
           <Typography align="center">Loading...</Typography>
           <div style={{ flexGrow: 1 }} />
           <Footer variant="page" />
@@ -110,8 +110,8 @@ export default function List({ params }: { params: { encoded: string } }) {
   }
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Stack spacing={4} sx={{ minHeight: '100vh' }}>
+    <Container maxWidth="sm">
+      <Stack spacing={4} sx={{ minHeight: '100vh', py: 6 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           {listData.title}
         </Typography>

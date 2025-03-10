@@ -10,7 +10,7 @@ export default function Footer({ variant = 'page' }: FooterProps) {
   const logoSize = 60;
   
   return (
-    <Stack spacing={1} alignItems="center" sx={{ py: 4 }}>
+    <Stack spacing={1} alignItems="center" sx={{ py: 6 }}>
       {variant === 'page' && (
         <Link href="/" style={{ textDecoration: 'none', color: 'inherit', marginBottom: 1 }}>
           <Typography variant="h5" align="center">

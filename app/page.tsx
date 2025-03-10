@@ -19,7 +19,7 @@ export default function Home() {
         alignItems="center" 
         sx={{ 
           minHeight: '100vh',
-          py: 8,
+          py: 6,
           display: 'flex',
           flexDirection: 'column'
         }}

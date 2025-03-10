@@ -108,8 +108,8 @@ export default function Compare() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Stack spacing={4} sx={{ minHeight: '100vh' }}>
+    <Container maxWidth="md">
+      <Stack spacing={4} sx={{ minHeight: '100vh', py: 6 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Compare Rankings
         </Typography>

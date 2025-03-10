@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   TextField,
   Button,
@@ -13,14 +13,21 @@ import {
   Stack,
   ToggleButtonGroup,
   ToggleButton,
+  Box,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import { encodeUrlSafeBase64 } from '../utils/encoding';
+import EditIcon from '@mui/icons-material/Edit';
+import { encodeUrlSafeBase64, decodeUrlSafeBase64 } from '../utils/encoding';
 import BrandHeader from '../components/BrandHeader';
 import Footer from '../components/Footer';
 
 type InputMode = 'single' | 'bulk';
+
+interface ListData {
+  title: string;
+  items: string[];
+}
 
 function parseBulkInput(input: string): string[] {
   // First, try to parse as CSV
@@ -64,16 +71,48 @@ function parseBulkInput(input: string): string[] {
 
 export default function CreateList() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editParam = searchParams.get('edit');
+  
   const [title, setTitle] = useState('');
   const [newItem, setNewItem] = useState('');
   const [items, setItems] = useState<string[]>([]);
   const [inputMode, setInputMode] = useState<InputMode>('single');
   const [bulkInput, setBulkInput] = useState('');
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // Load existing list data if in edit mode
+  useEffect(() => {
+    if (editParam) {
+      try {
+        const decoded = decodeUrlSafeBase64(editParam);
+        const data = JSON.parse(decoded) as ListData;
+        
+        if (data.title && Array.isArray(data.items)) {
+          setTitle(data.title);
+          setItems(data.items);
+          setIsEditMode(true);
+        }
+      } catch (error) {
+        console.error('Failed to decode edit data:', error);
+      }
+    }
+  }, [editParam]);
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputMode === 'single' && newItem.trim()) {
-      setItems([...items, newItem.trim()]);
+      if (editingIndex !== null) {
+        // Update existing item
+        const updatedItems = [...items];
+        updatedItems[editingIndex] = newItem.trim();
+        setItems(updatedItems);
+        setEditingIndex(null);
+      } else {
+        // Add new item
+        setItems([...items, newItem.trim()]);
+      }
       setNewItem('');
     }
   };
@@ -88,6 +127,21 @@ export default function CreateList() {
 
   const handleDeleteItem = (index: number) => {
     setItems(items.filter((_, i) => i !== index));
+    if (editingIndex === index) {
+      setEditingIndex(null);
+      setNewItem('');
+    }
+  };
+
+  const handleEditItem = (index: number) => {
+    setNewItem(items[index]);
+    setEditingIndex(index);
+    setInputMode('single'); // Switch to single mode for editing
+  };
+
+  const handleCancelEdit = () => {
+    setNewItem('');
+    setEditingIndex(null);
   };
 
   const handleCreateList = () => {
@@ -107,7 +161,7 @@ export default function CreateList() {
     <Container maxWidth="sm">
       <Stack spacing={4} sx={{ minHeight: '100vh', py: 6 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Create Your List
+          {isEditMode ? 'Edit List' : 'Create Your List'}
         </Typography>
 
         <TextField
@@ -124,6 +178,7 @@ export default function CreateList() {
           onChange={(_, newMode) => newMode && setInputMode(newMode)}
           aria-label="input mode"
           fullWidth
+          disabled={editingIndex !== null}
         >
           <ToggleButton value="single" aria-label="single item">
             Add Single Items
@@ -135,14 +190,26 @@ export default function CreateList() {
 
         {inputMode === 'single' ? (
           <form onSubmit={handleAddItem}>
-            <TextField
-              label="Add new item"
-              value={newItem}
-              onChange={(e) => setNewItem(e.target.value)}
-              fullWidth
-              margin="normal"
-              placeholder="Enter a single item and press Enter"
-            />
+            <Stack direction="row" spacing={1}>
+              <TextField
+                label={editingIndex !== null ? "Edit item" : "Add new item"}
+                value={newItem}
+                onChange={(e) => setNewItem(e.target.value)}
+                fullWidth
+                margin="normal"
+                placeholder={editingIndex !== null ? "Edit item and press Enter" : "Enter a single item and press Enter"}
+              />
+              {editingIndex !== null && (
+                <Button
+                  variant="text"
+                  color="primary"
+                  onClick={handleCancelEdit}
+                  sx={{ mt: 2 }}
+                >
+                  Cancel
+                </Button>
+              )}
+            </Stack>
           </form>
         ) : (
           <Stack spacing={2}>
@@ -178,14 +245,27 @@ export default function CreateList() {
               key={index}
               className="list-item"
               secondaryAction={
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={() => handleDeleteItem(index)}
-                >
-                  <DeleteIcon />
-                </IconButton>
+                <Box>
+                  <IconButton
+                    edge="end"
+                    aria-label="edit"
+                    onClick={() => handleEditItem(index)}
+                    sx={{ mr: 1 }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => handleDeleteItem(index)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
               }
+              sx={{
+                backgroundColor: editingIndex === index ? 'rgba(0, 0, 0, 0.04)' : 'inherit',
+              }}
             >
               {item}
             </ListItem>
@@ -199,7 +279,7 @@ export default function CreateList() {
             onClick={handleCreateList}
             fullWidth
           >
-            Create List
+            {isEditMode ? 'Save Changes' : 'Create List'}
           </Button>
         )}
 

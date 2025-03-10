@@ -16,6 +16,9 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Container, Typography, Button, Stack, Snackbar } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import ShareIcon from '@mui/icons-material/Share';
+import { useRouter } from 'next/navigation';
 import { SortableItem } from './SortableItem';
 import { encodeUrlSafeBase64, decodeUrlSafeBase64 } from '../../utils/encoding';
 import BrandHeader from '../../components/BrandHeader';
@@ -27,6 +30,7 @@ interface ListData {
 }
 
 export default function List({ params }: { params: { encoded: string } }) {
+  const router = useRouter();
   const [listData, setListData] = useState<ListData | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +87,14 @@ export default function List({ params }: { params: { encoded: string } }) {
     }
   };
 
+  const handleEdit = () => {
+    if (listData) {
+      // Encode the current list data and redirect to create page with edit parameter
+      const encodedList = encodeUrlSafeBase64(JSON.stringify(listData));
+      router.push(`/create?edit=${encodedList}`);
+    }
+  };
+
   if (error) {
     return (
       <Container maxWidth="sm">
@@ -133,9 +145,27 @@ export default function List({ params }: { params: { encoded: string } }) {
           </SortableContext>
         </DndContext>
 
-        <Button variant="contained" color="primary" onClick={handleShare}>
-          Share List
-        </Button>
+        <Stack direction="row" spacing={2}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handleShare}
+            startIcon={<ShareIcon />}
+            sx={{ flex: 1 }}
+          >
+            Share List
+          </Button>
+          
+          <Button 
+            variant="outlined" 
+            color="secondary" 
+            onClick={handleEdit}
+            startIcon={<EditIcon />}
+            sx={{ flex: 1 }}
+          >
+            Edit List
+          </Button>
+        </Stack>
 
         <div style={{ flexGrow: 1 }} />
         <Footer variant="page" />

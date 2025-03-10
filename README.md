@@ -36,7 +36,7 @@ The "Jiggle a Demo List" button uses the following data to create a list:
 }
 ```
 
-An existing list can be loaded by accessing https://listjiggler.com/list/<encoded-list>, for example: https://listjiggler.com/list/ewogICJ0aXRsZSI6ICJUaGluZ3MgSSBMaWtlIFRvIEVhdCIsCiAgIml0ZW1zIjogWyJhcHBsZXMiLCJvcmFuZ2VzIiwiYmFuYW5hcyIsIm9saXZlcyIsInNtYWxsLCBzbG93LW1vdmluZyBjaGlsZHJlbiJdCn0K
+An existing list can be loaded by accessing https://list-jiggler.meyer4hire.com/list/<encoded-list>, for example: https://list-jiggler.meyer4hire.com/list/ewogICJ0aXRsZSI6ICJUaGluZ3MgSSBMaWtlIFRvIEVhdCIsCiAgIml0ZW1zIjogWyJhcHBsZXMiLCJvcmFuZ2VzIiwiYmFuYW5hcyIsIm9saXZlcyIsInNtYWxsLCBzbG93LW1vdmluZyBjaGlsZHJlbiJdCn0K
 
 ## Deployment
 List Jiggler can be loaded into your browser locally or deployed as a static page on a web server.

@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       version: '1.0',
       title: data.title,
       provider_name: 'List Jiggler',
-      provider_url: 'https://listjiggler.com',
+      provider_url: 'https://list-jiggler.meyer4hire.com',
       width: 400,
       height: approximateHeight,
       html: listHtml

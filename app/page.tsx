@@ -31,23 +31,34 @@ export default function Home() {
           Your list data is stored entirely in the URL - no server required!
         </Typography>
 
-        <Stack direction="row" spacing={2}>
+        <Stack spacing={2} alignItems="center">
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="contained"
+              color="primary"
+              component={Link}
+              href="/create"
+            >
+              Jiggle My Own List
+            </Button>
+            
+            <Button
+              variant="outlined"
+              color="primary"
+              component={Link}
+              href={`/list/${encodedDemoList}`}
+            >
+              Jiggle a Demo List
+            </Button>
+          </Stack>
+
           <Button
-            variant="contained"
+            variant="text"
             color="primary"
             component={Link}
-            href="/create"
+            href="/compare"
           >
-            Jiggle My Own List
-          </Button>
-          
-          <Button
-            variant="outlined"
-            color="primary"
-            component={Link}
-            href={`/list/${encodedDemoList}`}
-          >
-            Jiggle a Demo List
+            Compare Multiple Rankings
           </Button>
         </Stack>
 

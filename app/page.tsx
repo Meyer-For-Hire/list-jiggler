@@ -1,6 +1,8 @@
 import { Button, Typography, Stack, Container } from '@mui/material';
 import Link from 'next/link';
 import { encodeUrlSafeBase64 } from './utils/encoding';
+import BrandHeader from './components/BrandHeader';
+import Footer from './components/Footer';
 
 const demoList = {
   title: "Things I Like To Eat",
@@ -11,11 +13,18 @@ export default function Home() {
   const encodedDemoList = encodeUrlSafeBase64(JSON.stringify(demoList));
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
-      <Stack spacing={4} alignItems="center">
-        <Typography variant="h3" component="h1" gutterBottom align="center">
-          List Jiggler
-        </Typography>
+    <Container maxWidth="sm">
+      <Stack 
+        spacing={4} 
+        alignItems="center" 
+        sx={{ 
+          minHeight: '100vh',
+          py: 8,
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <BrandHeader variant="home" />
         
         <Typography variant="body1" paragraph align="center">
           Create and share sortable lists with drag-and-drop functionality. 
@@ -41,6 +50,9 @@ export default function Home() {
             Jiggle a Demo List
           </Button>
         </Stack>
+
+        <div style={{ flexGrow: 1 }} />
+        <Footer variant="home" />
       </Stack>
     </Container>
   );

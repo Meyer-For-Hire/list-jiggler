@@ -17,6 +17,8 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { encodeUrlSafeBase64 } from '../utils/encoding';
+import BrandHeader from '../components/BrandHeader';
+import Footer from '../components/Footer';
 
 type InputMode = 'single' | 'bulk';
 
@@ -103,7 +105,7 @@ export default function CreateList() {
 
   return (
     <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Stack spacing={4}>
+      <Stack spacing={4} sx={{ minHeight: '100vh' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Create Your List
         </Typography>
@@ -200,6 +202,9 @@ export default function CreateList() {
             Create List
           </Button>
         )}
+
+        <div style={{ flexGrow: 1 }} />
+        <Footer variant="page" />
       </Stack>
     </Container>
   );

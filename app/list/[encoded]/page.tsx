@@ -18,6 +18,8 @@ import {
 import { Container, Typography, Button, Stack, Snackbar } from '@mui/material';
 import { SortableItem } from './SortableItem';
 import { encodeUrlSafeBase64, decodeUrlSafeBase64 } from '../../utils/encoding';
+import BrandHeader from '../../components/BrandHeader';
+import Footer from '../../components/Footer';
 
 interface ListData {
   title: string;
@@ -84,9 +86,13 @@ export default function List({ params }: { params: { encoded: string } }) {
   if (error) {
     return (
       <Container maxWidth="sm" sx={{ mt: 4 }}>
-        <Typography color="error" align="center">
-          {error}
-        </Typography>
+        <Stack spacing={4} sx={{ minHeight: '100vh' }}>
+          <Typography color="error" align="center">
+            {error}
+          </Typography>
+          <div style={{ flexGrow: 1 }} />
+          <Footer variant="page" />
+        </Stack>
       </Container>
     );
   }
@@ -94,14 +100,18 @@ export default function List({ params }: { params: { encoded: string } }) {
   if (!listData) {
     return (
       <Container maxWidth="sm" sx={{ mt: 4 }}>
-        <Typography align="center">Loading...</Typography>
+        <Stack spacing={4} sx={{ minHeight: '100vh' }}>
+          <Typography align="center">Loading...</Typography>
+          <div style={{ flexGrow: 1 }} />
+          <Footer variant="page" />
+        </Stack>
       </Container>
     );
   }
 
   return (
     <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Stack spacing={4}>
+      <Stack spacing={4} sx={{ minHeight: '100vh' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           {listData.title}
         </Typography>
@@ -126,6 +136,9 @@ export default function List({ params }: { params: { encoded: string } }) {
         <Button variant="contained" color="primary" onClick={handleShare}>
           Share List
         </Button>
+
+        <div style={{ flexGrow: 1 }} />
+        <Footer variant="page" />
 
         <Snackbar
           open={snackbarOpen}

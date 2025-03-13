@@ -1,13 +1,15 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Paper, Typography, Box } from '@mui/material';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 interface Props {
   id: string;
-  children: React.ReactNode;
+  children: string;
+  index?: number;
 }
 
-export function SortableItem({ id, children }: Props) {
+export function SortableItem({ id, children, index }: Props) {
   const {
     attributes,
     listeners,
@@ -22,17 +24,55 @@ export function SortableItem({ id, children }: Props) {
   };
 
   return (
-    <div
-      ref={setNodeRef}
+    <Paper 
+      ref={setNodeRef} 
       style={style}
-      className="list-item"
-      {...attributes}
-      {...listeners}
+      sx={{ 
+        p: 2, 
+        mb: 2, 
+        display: 'flex', 
+        alignItems: 'center',
+        bgcolor: 'background.paper',
+        '&:hover': {
+          bgcolor: 'action.hover',
+        },
+      }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <DragIndicatorIcon sx={{ color: 'grey.500' }} />
-        {children}
-      </div>
-    </div>
+      <Box 
+        {...attributes} 
+        {...listeners} 
+        sx={{ 
+          mr: 2, 
+          cursor: 'grab',
+          display: 'flex',
+          color: 'action.active',
+          '&:hover': { color: 'primary.main' }
+        }}
+      >
+        <DragIndicatorIcon />
+      </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+        {index !== undefined && (
+          <Box
+            sx={{
+              mr: 2,
+              bgcolor: 'grey.600',
+              color: 'common.white',
+              borderRadius: 1,
+              minWidth: '2em',
+              height: '2em',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 'medium',
+              fontSize: '0.875rem'
+            }}
+          >
+            {index + 1}
+          </Box>
+        )}
+        <Typography sx={{ flex: 1 }}>{children}</Typography>
+      </Box>
+    </Paper>
   );
 } 

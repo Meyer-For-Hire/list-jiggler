@@ -97,7 +97,7 @@ export default function List({ params }: { params: { encoded: string } }) {
 
   if (error) {
     return (
-      <Container maxWidth="sm">
+      <Container maxWidth="md">
         <Stack spacing={4} sx={{ minHeight: '100vh', py: 6 }}>
           <Typography color="error" align="center">
             {error}
@@ -111,7 +111,7 @@ export default function List({ params }: { params: { encoded: string } }) {
 
   if (!listData) {
     return (
-      <Container maxWidth="sm">
+      <Container maxWidth="md">
         <Stack spacing={4} sx={{ minHeight: '100vh', py: 6 }}>
           <Typography align="center">Loading...</Typography>
           <div style={{ flexGrow: 1 }} />
@@ -122,7 +122,7 @@ export default function List({ params }: { params: { encoded: string } }) {
   }
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <Stack spacing={4} sx={{ minHeight: '100vh', py: 6 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           {listData.title}
@@ -137,8 +137,8 @@ export default function List({ params }: { params: { encoded: string } }) {
             items={listData.items}
             strategy={verticalListSortingStrategy}
           >
-            {listData.items.map((item) => (
-              <SortableItem key={item} id={item}>
+            {listData.items.map((item, index) => (
+              <SortableItem key={item} id={item} index={index}>
                 {item}
               </SortableItem>
             ))}

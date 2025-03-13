@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   TextField,
@@ -14,6 +14,7 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Box,
+  CircularProgress,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -69,7 +70,8 @@ function parseBulkInput(input: string): string[] {
     .filter(item => item.length > 0);
 }
 
-export default function CreateList() {
+// Create a separate component that uses useSearchParams
+function CreateListContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editParam = searchParams.get('edit');
@@ -158,134 +160,165 @@ export default function CreateList() {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Stack spacing={4} sx={{ minHeight: '100vh', py: 6 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          {isEditMode ? 'Edit List' : 'Create Your List'}
-        </Typography>
+    <Stack spacing={4} sx={{ minHeight: '100vh', py: 6 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        {isEditMode ? 'Edit List' : 'Create Your List'}
+      </Typography>
 
-        <TextField
-          label="List Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
+      <TextField
+        label="List Title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        fullWidth
+        margin="normal"
+      />
 
-        <ToggleButtonGroup
-          value={inputMode}
-          exclusive
-          onChange={(_, newMode) => newMode && setInputMode(newMode)}
-          aria-label="input mode"
-          fullWidth
-          disabled={editingIndex !== null}
-        >
-          <ToggleButton value="single" aria-label="single item">
-            Add Single Items
-          </ToggleButton>
-          <ToggleButton value="bulk" aria-label="bulk input">
-            Add Multiple Items at Once
-          </ToggleButton>
-        </ToggleButtonGroup>
+      <ToggleButtonGroup
+        value={inputMode}
+        exclusive
+        onChange={(_, newMode) => newMode && setInputMode(newMode)}
+        aria-label="input mode"
+        fullWidth
+        disabled={editingIndex !== null}
+      >
+        <ToggleButton value="single" aria-label="single item">
+          Add Single Items
+        </ToggleButton>
+        <ToggleButton value="bulk" aria-label="bulk input">
+          Add Multiple Items at Once
+        </ToggleButton>
+      </ToggleButtonGroup>
 
-        {inputMode === 'single' ? (
-          <form onSubmit={handleAddItem}>
-            <Stack direction="row" spacing={1}>
-              <TextField
-                label={editingIndex !== null ? "Edit item" : "Add new item"}
-                value={newItem}
-                onChange={(e) => setNewItem(e.target.value)}
-                fullWidth
-                margin="normal"
-                placeholder={editingIndex !== null ? "Edit item and press Enter" : "Enter a single item and press Enter"}
-              />
-              {editingIndex !== null && (
-                <Button
-                  variant="text"
-                  color="primary"
-                  onClick={handleCancelEdit}
-                  sx={{ mt: 2 }}
-                >
-                  Cancel
-                </Button>
-              )}
-            </Stack>
-          </form>
-        ) : (
-          <Stack spacing={2}>
+      {inputMode === 'single' ? (
+        <form onSubmit={handleAddItem}>
+          <Stack direction="row" spacing={1}>
             <TextField
-              label="Bulk add items"
-              value={bulkInput}
-              onChange={(e) => setBulkInput(e.target.value)}
+              label={editingIndex !== null ? "Edit item" : "Add new item"}
+              value={newItem}
+              onChange={(e) => setNewItem(e.target.value)}
               fullWidth
               margin="normal"
-              multiline
-              rows={4}
-              placeholder={
-                'Add multiple items separated by commas or one item per line.\n\n' +
-                'For CSV, quote items containing commas. Example:\n' +
-                'apple, cherry, "very, very ripe banana"'
-              }
+              placeholder={editingIndex !== null ? "Edit item and press Enter" : "Enter a single item and press Enter"}
             />
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleAddBulkItems}
-              disabled={!bulkInput.trim()}
-              startIcon={<AddIcon />}
-            >
-              Add Items
-            </Button>
+            {editingIndex !== null && (
+              <Button
+                variant="text"
+                color="primary"
+                onClick={handleCancelEdit}
+                sx={{ mt: 2 }}
+              >
+                Cancel
+              </Button>
+            )}
           </Stack>
-        )}
-
-        <List>
-          {items.map((item, index) => (
-            <ListItem
-              key={index}
-              className="list-item"
-              secondaryAction={
-                <Box>
-                  <IconButton
-                    edge="end"
-                    aria-label="edit"
-                    onClick={() => handleEditItem(index)}
-                    sx={{ mr: 1 }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    edge="end"
-                    aria-label="delete"
-                    onClick={() => handleDeleteItem(index)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              }
-              sx={{
-                backgroundColor: editingIndex === index ? 'rgba(0, 0, 0, 0.04)' : 'inherit',
-              }}
-            >
-              {item}
-            </ListItem>
-          ))}
-        </List>
-
-        {items.length > 0 && (
+        </form>
+      ) : (
+        <Stack spacing={2}>
+          <TextField
+            label="Bulk add items"
+            value={bulkInput}
+            onChange={(e) => setBulkInput(e.target.value)}
+            fullWidth
+            margin="normal"
+            multiline
+            rows={4}
+            placeholder={
+              'Add multiple items separated by commas or one item per line.\n\n' +
+              'For CSV, quote items containing commas. Example:\n' +
+              'apple, cherry, "very, very ripe banana"'
+            }
+          />
           <Button
             variant="contained"
-            color="primary"
-            onClick={handleCreateList}
-            fullWidth
+            color="secondary"
+            onClick={handleAddBulkItems}
+            disabled={!bulkInput.trim()}
+            startIcon={<AddIcon />}
           >
-            {isEditMode ? 'Save Changes' : 'Create List'}
+            Add Items
           </Button>
-        )}
+        </Stack>
+      )}
 
+      <List>
+        {items.map((item, index) => (
+          <ListItem
+            key={index}
+            className="list-item"
+            secondaryAction={
+              <Box>
+                <IconButton
+                  edge="end"
+                  aria-label="edit"
+                  onClick={() => handleEditItem(index)}
+                  sx={{ mr: 1 }}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  onClick={() => handleDeleteItem(index)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            }
+            sx={{
+              backgroundColor: editingIndex === index ? 'rgba(0, 0, 0, 0.04)' : 'inherit',
+            }}
+          >
+            {item}
+          </ListItem>
+        ))}
+      </List>
+
+      {items.length > 0 && (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleCreateList}
+          fullWidth
+        >
+          {isEditMode ? 'Save Changes' : 'Create List'}
+        </Button>
+      )}
+
+      <div style={{ flexGrow: 1 }} />
+      <Footer variant="page" />
+    </Stack>
+  );
+}
+
+// Loading fallback component
+function LoadingFallback() {
+  return (
+    <Container maxWidth="sm">
+      <Stack 
+        spacing={4} 
+        sx={{ 
+          minHeight: '100vh', 
+          py: 6,
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <CircularProgress />
+        <Typography>Loading...</Typography>
         <div style={{ flexGrow: 1 }} />
         <Footer variant="page" />
       </Stack>
+    </Container>
+  );
+}
+
+// Main component with Suspense boundary
+export default function CreateList() {
+  return (
+    <Container maxWidth="sm">
+      <Suspense fallback={<LoadingFallback />}>
+        <CreateListContent />
+      </Suspense>
     </Container>
   );
 } 

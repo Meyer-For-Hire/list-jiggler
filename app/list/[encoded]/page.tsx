@@ -15,7 +15,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Container, Typography, Button, Stack, Snackbar } from '@mui/material';
+import { Container, Typography, Button, Stack, Snackbar, Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ShareIcon from '@mui/icons-material/Share';
 import { useRouter } from 'next/navigation';
@@ -145,13 +145,13 @@ export default function List({ params }: { params: { encoded: string } }) {
           </SortableContext>
         </DndContext>
 
-        <Stack direction="row" spacing={2}>
+        <Box sx={{ display: 'flex', gap: 2 }}>
           <Button 
             variant="contained" 
             color="primary" 
             onClick={handleShare}
             startIcon={<ShareIcon />}
-            sx={{ flex: 1 }}
+            sx={{ flex: 2 }}
           >
             Share List
           </Button>
@@ -163,9 +163,9 @@ export default function List({ params }: { params: { encoded: string } }) {
             startIcon={<EditIcon />}
             sx={{ flex: 1 }}
           >
-            Edit List
+            Edit
           </Button>
-        </Stack>
+        </Box>
 
         <div style={{ flexGrow: 1 }} />
         <Footer variant="page" />

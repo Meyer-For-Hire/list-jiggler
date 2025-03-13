@@ -16,9 +16,10 @@ import {
   Paper,
   Alert,
 } from '@mui/material';
-import { decodeUrlSafeBase64 } from '../utils/encoding';
+import { decodeUrlSafeBase64, encodeUrlSafeBase64 } from '../utils/encoding';
 import { findOptimalRanking, validateRankings } from '../utils/rbo';
 import Footer from '../components/Footer';
+import { useRouter } from 'next/navigation';
 
 interface ListData {
   title: string;
@@ -31,14 +32,14 @@ interface RankingData {
   rboRank: number;
 }
 
-function extractListFromUrl(url: string): string[] | null {
+function extractListFromUrl(url: string): { title: string; items: string[] } | null {
   try {
     const encoded = url.split('/list/')[1];
     if (!encoded) return null;
     
     const decoded = decodeUrlSafeBase64(encoded);
     const data = JSON.parse(decoded) as ListData;
-    return data.items;
+    return { title: data.title, items: data.items };
   } catch (e) {
     return null;
   }
@@ -48,6 +49,31 @@ export default function Compare() {
   const [urls, setUrls] = useState('');
   const [rankings, setRankings] = useState<RankingData[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const getNewListTitle = () => {
+    const urlList = urls.split(/\r?\n/).filter(url => url.trim());
+    const lists = urlList.map(url => extractListFromUrl(url)).filter((l): l is { title: string; items: string[] } => l !== null);
+    
+    // Check if all titles match
+    const firstTitle = lists[0].title;
+    const allTitlesMatch = lists.every(list => list.title === firstTitle);
+    
+    // Set title based on whether all titles match
+    return allTitlesMatch 
+      ? `${firstTitle} (combined rank)`
+      : 'Combined Ranked List';
+  };
+
+  const formatDate = () => {
+    const now = new Date();
+    return now.getFullYear() +
+           String(now.getMonth() + 1).padStart(2, '0') +
+           String(now.getDate()).padStart(2, '0') + '.' +
+           String(now.getHours()).padStart(2, '0') +
+           String(now.getMinutes()).padStart(2, '0') +
+           String(now.getSeconds()).padStart(2, '0');
+  };
 
   const handleCompare = () => {
     const urlList = urls.split(/\r?\n/).filter(url => url.trim());
@@ -63,18 +89,18 @@ export default function Compare() {
       return;
     }
 
-    const validRankings = extractedRankings.filter((r): r is string[] => r !== null);
-    if (!validateRankings(validRankings)) {
+    const validRankings = extractedRankings.filter((r): r is { title: string; items: string[] } => r !== null);
+    if (!validateRankings(validRankings.map(r => r.items))) {
       setError('The lists contain different items or are of different lengths');
       return;
     }
 
     // Calculate optimal ranking using RBO
-    const optimalRanking = findOptimalRanking(validRankings);
+    const optimalRanking = findOptimalRanking(validRankings.map(r => r.items));
 
     // Prepare data for the table
     const rankingData: RankingData[] = optimalRanking.map(item => {
-      const rankings = validRankings.map(ranking => ranking.indexOf(item) + 1);
+      const rankings = validRankings.map(ranking => ranking.items.indexOf(item) + 1);
       const rboRank = optimalRanking.indexOf(item) + 1;
       return { item, rankings, rboRank };
     });
@@ -103,8 +129,27 @@ export default function Compare() {
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'rankings.csv';
+    const title = getNewListTitle();
+    link.download = `${title}.${formatDate()}.csv`;
     link.click();
+  };
+
+  const handleCreateNewList = () => {
+    if (rankings.length > 0) {
+      // Sort the items by their RBO rank
+      const sortedItems = rankings
+        .sort((a, b) => a.rboRank - b.rboRank)
+        .map(r => r.item);
+      
+      const newListData = {
+        title: getNewListTitle(),
+        items: sortedItems
+      };
+
+      const encodedList = encodeUrlSafeBase64(JSON.stringify(newListData));
+      const url = `${window.location.origin}/list/${encodedList}`;
+      window.open(url, '_blank');
+    }
   };
 
   return (
@@ -140,6 +185,15 @@ export default function Compare() {
               onClick={handleDownloadCsv}
             >
               Download CSV
+            </Button>
+          )}
+          {rankings.length > 0 && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCreateNewList}
+            >
+              Open as New List
             </Button>
           )}
         </Stack>

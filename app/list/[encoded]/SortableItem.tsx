@@ -46,6 +46,7 @@ export function SortableItem({ id, children, index }: Props) {
           cursor: 'grab',
           display: 'flex',
           color: 'action.active',
+          touchAction: 'none',
           '&:hover': { color: 'primary.main' }
         }}
       >

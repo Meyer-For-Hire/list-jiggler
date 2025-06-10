@@ -137,11 +137,13 @@ export default function List({ params }: { params: { encoded: string } }) {
             items={listData.items}
             strategy={verticalListSortingStrategy}
           >
-            {listData.items.map((item, index) => (
-              <SortableItem key={item} id={item} index={index}>
-                {item}
-              </SortableItem>
-            ))}
+            <Box sx={{ touchAction: 'none', userSelect: 'none' }}>
+              {listData.items.map((item, index) => (
+                <SortableItem key={item} id={item} index={index}>
+                  {item}
+                </SortableItem>
+              ))}
+            </Box>
           </SortableContext>
         </DndContext>
 
